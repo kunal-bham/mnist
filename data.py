@@ -19,8 +19,9 @@ def load_mnist(image_path, label_path):
         labels = np.frombuffer(labf.read(), dtype=np.uint8)
 
     # image is list of lists (28x28); label is singular number
+    images = [image.flatten() for image in images]
+    labels = [[1 if i == label else 0 for i in range(10)] for label in labels]
     return images, labels
-
 
 # Loading training sample
 images, labels = load_mnist(
