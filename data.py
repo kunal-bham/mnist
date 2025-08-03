@@ -28,3 +28,7 @@ images, labels = load_mnist(
     'data/MNIST/raw/train-images-idx3-ubyte',
     'data/MNIST/raw/train-labels-idx1-ubyte'
 )
+
+# Randomize weights and biases
+# W1 = 784 weights x 128 hidden layer neurons
+# B1 = 128 biases 
