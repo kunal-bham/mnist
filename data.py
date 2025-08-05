@@ -21,14 +21,30 @@ def load_mnist(image_path, label_path):
     # image is list of lists (28x28); label is singular number
     images = [image.flatten() for image in images]
     labels = [[1 if i == label else 0 for i in range(10)] for label in labels]
-    return images, labels
+
+    split_index = int(0.9 * len(images))
+
+    test_images, test_labels = images[split_index:], labels[split_index:]
+    train_images, train_labels = images[:split_index], labels[:split_index]
+
+    return train_images, train_labels, test_images, test_labels
+
+def sigmoid(z):
+    return 1/(1 + np.exp(-z))
+
+def activation(input_vector, weight, bias):
+    return sigmoid(np.matmul(weight, input_vector) + bias)
 
 # Loading training sample
-images, labels = load_mnist(
+train_images, train_labels, test_images, test_labels = load_mnist(
     'data/MNIST/raw/train-images-idx3-ubyte',
     'data/MNIST/raw/train-labels-idx1-ubyte'
 )
 
 # Randomize weights and biases
-# W1 = 784 weights x 128 hidden layer neurons
-# B1 = 128 biases 
+W1 = np.random.rand(128,784)
+B1 = np.random.rand(128,1)
+
+W2 = np.random.rand(10,128)
+B2 = np.random.rand(10,1)
+
