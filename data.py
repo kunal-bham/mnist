@@ -43,9 +43,15 @@ def forward_propagation(input_vector, weights, biases):
     return output_layer
 
 def cost_function(actual_vector, expected_vector):
+    cost = 0
     for actual_elem, expected_elem in zip(actual_vector, expected_vector):
-        input((actual_elem - expected_elem))
-    return 0
+        cost += ((actual_elem - expected_elem)**2)
+    return cost
+
+def back_propagation(weights, biases, total_cost):
+    new_weights = []
+    new_biases = []
+    return new_weights, new_biases
 
 # Loading training sample
 train_images, train_labels, test_images, test_labels = load_mnist(
@@ -53,13 +59,22 @@ train_images, train_labels, test_images, test_labels = load_mnist(
     'data/MNIST/raw/train-labels-idx1-ubyte'
 )
 
-# Randomize weights and biases
+# Randomize weights and biases -1 to 1
 W1 = np.random.rand(128,784)
-B1 = np.random.rand(128,)
+B1 = np.random.rand(128,) * 2 - 1
 
 W2 = np.random.rand(10,128)
-B2 = np.random.rand(10,)
+B2 = np.random.rand(10,) * 2 - 1
 
-for train_image, train_label in zip(train_images, train_labels):
-    output_vector = forward_propagation(train_image, [W1, W2], [B1, B2])
-    cost_function(output_vector, train_labels)
+weights = (W1, W2)
+biases = (B1, B2)
+
+def training_loop():
+    for i in range(0, 100):
+        for train_image, train_label in zip(train_images, train_labels):
+            total_cost = 0
+            output_vector = forward_propagation(train_image, weights, biases)
+            total_cost += cost_function(output_vector, train_label)
+        total_cost /= len(train_images)
+        weights, biases = back_propagation(weights, biases, total_cost)
+    return 
