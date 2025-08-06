@@ -33,7 +33,14 @@ def sigmoid(z):
     return 1/(1 + np.exp(-z))
 
 def activation(input_vector, weight, bias):
-    return sigmoid(np.matmul(weight, input_vector) + bias)
+    return sigmoid((np.matmul(weight, input_vector) + bias))
+
+def forward_propagation(input_vector, weights, biases):
+    W1, W2 = weights
+    B1, B2 = biases
+    hidden_layer = activation(input_vector, W1, B1)
+    output_layer = activation(hidden_layer, W2, B2)
+    return output_layer
 
 # Loading training sample
 train_images, train_labels, test_images, test_labels = load_mnist(
@@ -43,8 +50,10 @@ train_images, train_labels, test_images, test_labels = load_mnist(
 
 # Randomize weights and biases
 W1 = np.random.rand(128,784)
-B1 = np.random.rand(128,1)
+B1 = np.random.rand(128,)
 
 W2 = np.random.rand(10,128)
-B2 = np.random.rand(10,1)
+B2 = np.random.rand(10,)
 
+for train_image, train_label in zip(train_images, train_labels):
+    forward_propagation(train_image, [W1, W2], [B1, B2])
