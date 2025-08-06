@@ -78,3 +78,6 @@ def training_loop():
         total_cost /= len(train_images)
         weights, biases = back_propagation(weights, biases, total_cost)
     return 
+
+if __name__ == "__main__":
+    training_loop()
