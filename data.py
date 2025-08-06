@@ -42,6 +42,11 @@ def forward_propagation(input_vector, weights, biases):
     output_layer = activation(hidden_layer, W2, B2)
     return output_layer
 
+def cost_function(actual_vector, expected_vector):
+    for actual_elem, expected_elem in zip(actual_vector, expected_vector):
+        input((actual_elem - expected_elem))
+    return 0
+
 # Loading training sample
 train_images, train_labels, test_images, test_labels = load_mnist(
     'data/MNIST/raw/train-images-idx3-ubyte',
@@ -56,4 +61,5 @@ W2 = np.random.rand(10,128)
 B2 = np.random.rand(10,)
 
 for train_image, train_label in zip(train_images, train_labels):
-    forward_propagation(train_image, [W1, W2], [B1, B2])
+    output_vector = forward_propagation(train_image, [W1, W2], [B1, B2])
+    cost_function(output_vector, train_labels)
