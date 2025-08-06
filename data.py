@@ -32,14 +32,11 @@ def load_mnist(image_path, label_path):
 def sigmoid(z):
     return 1/(1 + np.exp(-z))
 
-def activation(input_vector, weight, bias):
-    return sigmoid((np.matmul(weight, input_vector) + bias))
-
 def forward_propagation(input_vector, weights, biases):
     W1, W2 = weights
     B1, B2 = biases
-    hidden_layer = activation(input_vector, W1, B1)
-    output_layer = activation(hidden_layer, W2, B2)
+    hidden_layer = sigmoid((np.matmul(W1, input_vector) + B1))
+    output_layer = sigmoid((np.matmul(W2, hidden_layer) + B2))
     return output_layer
 
 def cost_function(actual_vector, expected_vector):
