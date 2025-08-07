@@ -3,9 +3,6 @@ import struct
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Downloads to ./data by default
-mnist_train = datasets.MNIST(root='./data', train=True, download=True, transform=transforms.ToTensor())
-mnist_test = datasets.MNIST(root='./data', train=False, download=True, transform=transforms.ToTensor())
 
 def load_mnist(image_path, label_path):
     # Load images
@@ -32,7 +29,7 @@ def load_mnist(image_path, label_path):
 def sigmoid(z):
     return 1/(1 + np.exp(-z))
 
-def forward_propagation(input_vector, weights, biases):
+def feed_forward(input_vector, weights, biases):
     W1, W2 = weights
     B1, B2 = biases
     hidden_layer = sigmoid((np.matmul(W1, input_vector) + B1))
@@ -45,36 +42,40 @@ def cost_function(actual_vector, expected_vector):
         cost += ((actual_elem - expected_elem)**2)
     return cost
 
-def back_propagation(weights, biases, total_cost):
-    new_weights = []
-    new_biases = []
-    return new_weights, new_biases
-
-# Loading training sample
-train_images, train_labels, test_images, test_labels = load_mnist(
-    'data/MNIST/raw/train-images-idx3-ubyte',
-    'data/MNIST/raw/train-labels-idx1-ubyte'
-)
-
-# Randomize weights and biases -1 to 1
-W1 = np.random.rand(128,784)
-B1 = np.random.rand(128,) * 2 - 1
-
-W2 = np.random.rand(10,128)
-B2 = np.random.rand(10,) * 2 - 1
-
-weights = (W1, W2)
-biases = (B1, B2)
+def back_propagation(weights, biases):
+    total_cost = 0
+    batched_output = []
+    for train_image, train_label in zip(train_images, train_labels):
+            total_cost = 0
+            output_vector = feed_forward(train_image, weights, biases)
+            total_cost += cost_function(output_vector, train_label)
+            batched_output.append(output_vector)
+            if len(batched_output) == 64:
+                weights = weights
+                biases = biases
+                batched_output = []
+    total_cost /= len(train_images)
+    return weights, biases
 
 def training_loop():
-    for i in range(0, 100):
-        for train_image, train_label in zip(train_images, train_labels):
-            total_cost = 0
-            output_vector = forward_propagation(train_image, weights, biases)
-            total_cost += cost_function(output_vector, train_label)
-        total_cost /= len(train_images)
-        weights, biases = back_propagation(weights, biases, total_cost)
-    return 
+    # Randomize weights and biases -1 to 1
+    W1 = np.random.rand(128,784)
+    B1 = np.random.rand(128,) * 2 - 1
+
+    W2 = np.random.rand(10,128)
+    B2 = np.random.rand(10,) * 2 - 1
+
+    weights = (W1, W2)
+    biases = (B1, B2)
+
+    for i in range(0, 10):
+        weights, biases = back_propagation(weights, biases)
 
 if __name__ == "__main__":
+    # Loading training sample
+    train_images, train_labels, test_images, test_labels = load_mnist(
+    'data/MNIST/raw/train-images-idx3-ubyte',
+    'data/MNIST/raw/train-labels-idx1-ubyte'
+    )
+    
     training_loop()
