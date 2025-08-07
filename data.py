@@ -32,13 +32,13 @@ def sigmoid(z):
 def feed_forward(input_vector, weights, biases):
     W1, W2 = weights
     B1, B2 = biases
-    a1 = np.matmul(W1, input_vector) + B1
-    z1 = sigmoid(a1)
-    a2 = np.matmul(W2, z1) + B2
-    z2 = sigmoid(a2)
+    z1 = np.matmul(W1, input_vector) + B1
+    a1 = sigmoid(z1)
+    z2 = np.matmul(W2, a1) + B2
+    a2 = sigmoid(z2)
     # hidden_layer = sigmoid((np.matmul(W1, input_vector) + B1))
     # output_layer = sigmoid((np.matmul(W2, hidden_layer) + B2))
-    return a1, z1, a2, z2
+    return z1, a1, z2, a2
 
 def cost_function(actual_vector, expected_vector):
     cost = 0
