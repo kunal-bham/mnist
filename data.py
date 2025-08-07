@@ -32,9 +32,13 @@ def sigmoid(z):
 def feed_forward(input_vector, weights, biases):
     W1, W2 = weights
     B1, B2 = biases
-    hidden_layer = sigmoid((np.matmul(W1, input_vector) + B1))
-    output_layer = sigmoid((np.matmul(W2, hidden_layer) + B2))
-    return output_layer
+    a1 = np.matmul(W1, input_vector) + B1
+    z1 = sigmoid(a1)
+    a2 = np.matmul(W2, z1) + B2
+    z2 = sigmoid(a2)
+    # hidden_layer = sigmoid((np.matmul(W1, input_vector) + B1))
+    # output_layer = sigmoid((np.matmul(W2, hidden_layer) + B2))
+    return a1, z1, a2, z2
 
 def cost_function(actual_vector, expected_vector):
     cost = 0
@@ -47,9 +51,9 @@ def back_propagation(weights, biases):
     batched_output = []
     for train_image, train_label in zip(train_images, train_labels):
             total_cost = 0
-            output_vector = feed_forward(train_image, weights, biases)
-            total_cost += cost_function(output_vector, train_label)
-            batched_output.append(output_vector)
+            output_layers = feed_forward(train_image, weights, biases)
+            total_cost += cost_function(output_layers[3], train_label)
+            batched_output.append(output_layers)
             if len(batched_output) == 64:
                 weights = weights
                 biases = biases
