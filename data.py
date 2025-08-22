@@ -29,14 +29,14 @@ def load_mnist(image_path, label_path):
 def sigmoid(z):
     return 1/(1 + np.exp(-z))
 
-def feed_forward(input_vector, weights, biases):
+def feed_forward(input_vector, weights, biases, train_label):
     W1, W2 = weights
     B1, B2 = biases
     z1 = np.matmul(W1, input_vector) + B1
     a1 = sigmoid(z1)
     z2 = np.matmul(W2, a1) + B2
     a2 = sigmoid(z2)
-    return z1, a1, z2, a2
+    return z1, a1, z2, a2, train_label
 
 def cost_function(actual_vector, expected_vector):
     cost = 0
@@ -48,21 +48,37 @@ def backprop_calculus_biases(biases, output_layers):
     LEARNING_RATE = 0
     return biases
 
-def backprop_calculus_weights(weights, output_layers):
+def backprop_calculus(weights, biases, batched_output):
     LEARNING_RATE = 0
-    return weights
+    W1, W2 = weights
+    B1, B2 = biases
+    dLdB2 = 0
+    dLdW2 = 0
+    dLdW1 = 0
+    dLdB1 = 0
+    for output_layers in batched_output:
+        z1, a1, z2, a2, y = output_layers
+        dLdB2 += 2 * (y - a2) * a2 * (1 - a2)
+        dLdW2 += dLdB2 * a1
+        dLdW1 += 0
+        dLdB1 += 0
+
+    W2 -= LEARNING_RATE * dLdW2    
+    B2 -= LEARNING_RATE * dLdB2
+    return weights, biases
 
 def back_propagation(weights, biases):
     total_cost = 0
     batched_output = []
     for train_image, train_label in zip(train_images, train_labels):
             total_cost = 0
-            output_layers = feed_forward(train_image, weights, biases)
+            output_layers = feed_forward(train_image, weights, biases, train_label)
             total_cost += cost_function(output_layers[3], train_label)
             batched_output.append(output_layers)
             if len(batched_output) == 64:
-                weights = backprop_calculus_weights(weights, output_layers)
-                biases = backprop_calculus_biases(biases, output_layers)
+                weights, biases = backprop_calculus(weights, biases, batched_output)
+                input(weights, biases, total_cost)
+                total_cost = 0
                 batched_output = []
     total_cost /= len(train_images)
     return weights, biases
