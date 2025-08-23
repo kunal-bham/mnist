@@ -58,6 +58,12 @@ def backprop_calculus(weights, biases, batched_output):
         dLdW1 += np.outer(delta1, input_vector)
         dLdB1 += delta1
 
+    batch_size = len(batched_output)
+    dLdW1 /= batch_size
+    dLdW2 /= batch_size  
+    dLdB1 /= batch_size
+    dLdB2 /= batch_size
+
     W2 -= LEARNING_RATE * dLdW2    
     B2 -= LEARNING_RATE * dLdB2
     W1 -= LEARNING_RATE * dLdW1    
