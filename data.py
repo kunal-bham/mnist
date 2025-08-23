@@ -1,8 +1,5 @@
-from torchvision import datasets, transforms
 import struct
 import numpy as np
-import matplotlib.pyplot as plt
-
 
 def load_mnist(image_path, label_path):
     # Load images
@@ -64,36 +61,37 @@ def backprop_calculus(weights, biases, batched_output):
         delta1 = (W2.T @ delta2) * (a1 * (1 - a1))
         dLdW1 += np.outer(delta1, input_vector)
         dLdB1 += delta1
-
     W2 -= LEARNING_RATE * dLdW2    
     B2 -= LEARNING_RATE * dLdB2
     W1 -= LEARNING_RATE * dLdW1    
     B1 -= LEARNING_RATE * dLdB1
+
+    weights = W1, W2
+    biases = B1, B2
     return weights, biases
 
 def back_propagation(weights, biases):
-    total_cost = 0
+    batch_cost, epoch_cost = 0, 0
     batched_output = []
     for train_image, train_label in zip(train_images, train_labels):
-            total_cost = 0
             output_layers = feed_forward(train_image, weights, biases, train_label)
-            total_cost += cost_function(output_layers[4], train_label)
+            batch_cost += cost_function(output_layers[4], train_label)
             batched_output.append(output_layers)
             if len(batched_output) == 64:
                 weights, biases = backprop_calculus(weights, biases, batched_output)
-                print(total_cost)
-                total_cost = 0
+                epoch_cost += batch_cost
+                batch_cost = 0
                 batched_output = []
-    total_cost /= len(train_images)
+    epoch_cost /= len(train_images)
+    print("epoch", epoch_cost)
     return weights, biases
 
 def training_loop():
     # Randomize weights and biases -1 to 1
-    W1 = np.random.rand(128,784)
-    B1 = np.random.rand(128,) * 2 - 1
-
-    W2 = np.random.rand(10,128)
-    B2 = np.random.rand(10,) * 2 - 1
+    W1 = np.random.rand(128,784) * 0.1 - 0.05
+    B1 = np.random.rand(128,) * 0.1 - 0.05
+    W2 = np.random.rand(10,128) * 0.1 - 0.05
+    B2 = np.random.rand(10,) * 0.1 - 0.05
 
     weights = (W1, W2)
     biases = (B1, B2)
