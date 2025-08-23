@@ -36,7 +36,7 @@ def feed_forward(input_vector, weights, biases, train_label):
     a1 = sigmoid(z1)
     z2 = np.matmul(W2, a1) + B2
     a2 = sigmoid(z2)
-    return z1, a1, z2, a2, train_label
+    return input_vector, z1, a1, z2, a2, train_label
 
 def cost_function(actual_vector, expected_vector):
     cost = 0
@@ -49,7 +49,7 @@ def backprop_calculus_biases(biases, output_layers):
     return biases
 
 def backprop_calculus(weights, biases, batched_output):
-    LEARNING_RATE = 0
+    LEARNING_RATE = 0.1
     W1, W2 = weights
     B1, B2 = biases
     dLdB2 = 0
@@ -57,14 +57,18 @@ def backprop_calculus(weights, biases, batched_output):
     dLdW1 = 0
     dLdB1 = 0
     for output_layers in batched_output:
-        z1, a1, z2, a2, y = output_layers
-        dLdB2 += 2 * (y - a2) * a2 * (1 - a2)
-        dLdW2 += dLdB2 * a1
-        dLdW1 += 0
-        dLdB1 += 0
+        input_vector, z1, a1, z2, a2, y = output_layers
+        delta2 = 2 * (a2 - y) * a2 * (1 - a2)
+        dLdB2 += delta2 
+        dLdW2 += np.outer(delta2, a1)
+        delta1 = (W2.T @ delta2) * (a1 * (1 - a1))
+        dLdW1 += np.outer(delta1, input_vector)
+        dLdB1 += delta1
 
     W2 -= LEARNING_RATE * dLdW2    
     B2 -= LEARNING_RATE * dLdB2
+    W1 -= LEARNING_RATE * dLdW1    
+    B1 -= LEARNING_RATE * dLdB1
     return weights, biases
 
 def back_propagation(weights, biases):
@@ -73,11 +77,11 @@ def back_propagation(weights, biases):
     for train_image, train_label in zip(train_images, train_labels):
             total_cost = 0
             output_layers = feed_forward(train_image, weights, biases, train_label)
-            total_cost += cost_function(output_layers[3], train_label)
+            total_cost += cost_function(output_layers[4], train_label)
             batched_output.append(output_layers)
             if len(batched_output) == 64:
                 weights, biases = backprop_calculus(weights, biases, batched_output)
-                input(weights, biases, total_cost)
+                print(total_cost)
                 total_cost = 0
                 batched_output = []
     total_cost /= len(train_images)
