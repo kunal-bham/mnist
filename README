@@ -1,6 +1,6 @@
 Coding MNIST Neural Network from Scratch
 
-Designed a neural network to classify handwritten digits from the MNIST dataset.
+Designed a neural network from scratch to classify handwritten digits from the MNIST dataset.
 
 - The network is a 2 layer neural network with 128 hidden units and a sigmoid activation function.
 - The network is trained using backpropagation and stochastic gradient descent.
