@@ -57,17 +57,12 @@ def backprop_calculus(weights, biases, batched_output):
         delta1 = (W2.T @ delta2) * (a1 * (1 - a1))
         dLdW1 += np.outer(delta1, input_vector)
         dLdB1 += delta1
-
-    batch_size = len(batched_output)
-    dLdW1 /= batch_size
-    dLdW2 /= batch_size  
-    dLdB1 /= batch_size
-    dLdB2 /= batch_size
-
+    
     W2 -= LEARNING_RATE * dLdW2    
     B2 -= LEARNING_RATE * dLdB2
     W1 -= LEARNING_RATE * dLdW1    
     B1 -= LEARNING_RATE * dLdB1
+    print(dLdW2)
     weights = W1, W2
     biases = B1, B2
     return weights, biases
@@ -89,27 +84,17 @@ def back_propagation(weights, biases):
     return weights, biases
 
 def training_loop():
-    W1 = np.random.randn(128,784) * np.sqrt(2.0/784) 
-    B1 = np.zeros(128)
-    W2 = np.random.randn(10,128) * np.sqrt(2.0/128)
-    B2 = np.zeros(10)
+    # Randomize weights and biases -1 to 1
+    W1 = np.random.rand(128,784) * 0.1 - 0.05
+    B1 = np.random.rand(128,) * 0.1 - 0.05
+    W2 = np.random.rand(10,128) * 0.1 - 0.05
+    B2 = np.random.rand(10,) * 0.1 - 0.05
 
     weights = (W1, W2)
     biases = (B1, B2)
 
     for i in range(0, 10):
         weights, biases = back_propagation(weights, biases)
-        validation_accuracy = validation_loop(weights, biases)
-        print(f"Validation accuracy: {validation_accuracy}")
-    return weights, biases
-
-def validation_loop(weights, biases):
-    correct = 0
-    for test_image, test_label in zip(test_images, test_labels):
-        output_layers = feed_forward(test_image, weights, biases, test_label)
-        if np.argmax(output_layers[4]) == np.argmax(test_label):
-            correct += 1
-    return correct / len(test_images)
 
 if __name__ == "__main__":
     # Loading training sample
@@ -118,4 +103,4 @@ if __name__ == "__main__":
     'data/MNIST/raw/train-labels-idx1-ubyte'
     )
     
-    weights, biases = training_loop()
+    training_loop()
